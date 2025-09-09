@@ -1,2 +1,6 @@
-# UNO-RUST-L
-This is the UNO game using RUST as language 
+# Description 
+This is program implement the UNO game 
+
+# Laws
+
+
