@@ -1,2 +1,2 @@
-// (step 1) : card 
-// (step 2):play
+// (step 1) : person 
+// (step 2):card
