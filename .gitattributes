@@ -1,0 +1,6 @@
+# Forcer GitHub à considérer tous les fichiers comme Rust
+* linguist-language=Rust
+
+# Ignorer certains fichiers qui faussent la détection
+Makefile linguist-vendored
+build.rs linguist-vendored
