@@ -137,7 +137,7 @@ fn main() {
         players: Vec::new(),
         table_cards: Vec::new(),
         trash_card: Vec::new(),
-        current_card: None, // pas de carte courante au début
+        current_card: None, 
         winners: Vec::new(),
     };
 
