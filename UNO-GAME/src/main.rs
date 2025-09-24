@@ -36,13 +36,13 @@ impl Person{
         self.cards.push(new_card);
     }
     fn get_player_cards(&self) ->&Vec<Card>{
-        println!("{} Player {} cards : {:?} ","🧑",self.get_position_player(),&self.cards);
+        println!("{} Player {} your cards : {:?} ","🧑",self.get_position_player(),&self.cards);
         &self.cards
     }
-    fn remove_cards(&mut self,cards_r:&Vec<usize>){
-        for i in 0..self.cards.len(){
-            self.cards.remove(cards_r[i]);
-        }
+    fn remove_cards(&mut self,index:u8){
+        println!("The card {:?} has been remove successfully for {} Player {}",self.cards[index as usize].get_card_info(),
+                                                                               "🧑",self.get_position_player());
+        self.cards.remove(index as usize);
     }
 }
 
@@ -53,8 +53,10 @@ struct Table{
     trash_card:Vec<Card>, // Here were we throw cards
     current_card:Card, // This is the card that is played 
     winners:Vec<Person>,//here we save winners in order 
-    current_pos_player:u8,//the position of the current player
+    current_pos_player:i8,//the position of the current player
     order_of_play:String,//if pair the order is -> if odd the order is <- 
+    counter:u8,//to count the sequence of a card 
+    color_chosen:String //the color for special card 
 }
 impl Table{
     fn get_cards(&self) ->Vec<Card>{ //here we get all cards 
@@ -104,6 +106,33 @@ impl Table{
             index+=1;
          }
     }
+    fn input_players(&self,msg:&str,start:u8,end:u8,type_id:&str) ->u8{ //all input player as to enter 
+    loop {
+        let mut input = String::new();
+
+        print!("{} => ", msg);
+        io::stdout().flush().unwrap(); 
+
+        io::stdin().read_line(&mut input).unwrap();
+        let input = input.trim();
+
+        match input.parse::<u8>() {
+            Ok(input_number) => {
+                if (input_number >= end || input_number <start) && (type_id == "table" || type_id =="index_card"){
+                    println!("Please choose the number of players >={} && <{} , try again ♻️",start,end);
+                    continue; 
+                }else if input_number !=1 && input_number !=2 && type_id=="choice_action"{
+                    println!("Please choose the number between 1 and 2 , try again ♻️");
+                    continue; 
+                }
+                return input_number; 
+            }
+            Err(_) => {
+                println!("'{}' is not a valid number, try again ♻️", input);
+            }
+        }
+    }
+}
     fn set_table_cards(&mut self,cards:Vec<Card>){ //here we set cards after shuffling 
          self.table_cards=self.shuffle_cards(cards.clone());
          println!("{} All cards are ready  to be drawn {} ", "✅","🃏");
@@ -125,14 +154,19 @@ impl Table{
     }
     fn set_current_card(&mut self,card:Card,player:&Person,type_id:&str){ //here we set a current card
         if type_id == "table" {
-           if card.get_value() == "COLOR-CHANGE🎨" || card.get_value() == "+4🌈" ||
-              card.get_value() == "+2" || card.get_value() == "SKIP🚫" || card.get_value() == "REVERSE🔄" {
-               self.table_cards =self.shuffle_cards(self.table_cards.clone());
-               self.set_current_card(self.table_cards[self.table_cards.len()-1].clone(), player, type_id);
-           } 
-           self.current_card = card.clone(); 
-           self.table_cards.pop();
-           println!(" =======> Table set {:?} as current card {}",card.get_card_info(),"🃏");  
+           if card.get_value() == "+2"  ||
+              card.get_value() == "REVERSE🔄" ||
+              card.get_value() == "COLOR-CHANGE🎨" ||
+              card.get_value() == "+4🌈" ||
+              card.get_value() == "SKIP🚫" {
+                self.set_table_cards(self.table_cards.clone());
+                self.set_current_card(self.table_cards[self.table_cards.len() - 1].clone(), &Person { position_player: 254, cards: Vec::new()}, "table");  
+            }else{
+               self.current_card = card.clone(); 
+               self.table_cards.pop();
+               println!(" =======> Table set {:?} as current card {}",card.get_card_info(),"🃏");
+            }  
+             
         }else {
            self.trash_card.push(self.current_card.clone());
            self.current_card = card.clone(); 
@@ -146,47 +180,51 @@ impl Table{
        }
         println!("{} Player {} is in position {} of winners list {}","🧑",player.get_position_player()+1,self.winners.len(),"🎊");
     }
-    fn skip_reverse_card(&mut self,card:Card,number_of_appearance:u8) ->u8{//here we what happen to the game after using skip and reverse card 
+    fn skip_reverse_card(&mut self) {//here we what happen to the game after using skip and reverse card 
        let len = self.players.len();
-       if card.get_value() == "SKIP🚫" {
-            let next_pos = (self.current_pos_player as usize + number_of_appearance as usize + 1) % len;
-            next_pos as u8
-       } else {
-            if number_of_appearance % 2 != 0 {
+       if self.current_card.get_value() == "SKIP🚫" {//if skip
+            self.current_pos_player=self.get_next_pos() as i8;    
+       } else {//if reverse card 
+            if self.order_of_play == "pair".to_string() {
                 self.order_of_play = "odd".to_string();
-               ((self.current_pos_player as usize + len - 1) % len) as u8
             } else {
                 self.order_of_play = "pair".to_string();
-               ((self.current_pos_player as usize + 1) % len) as u8
           }
        }
     }
     fn get_next_pos(&self) ->u8{ //here we are looking for the next pos of player
         if self.current_pos_player == 0 && self.order_of_play == "odd".to_string(){
-            (self.players.len() as u8) - 1
-        }else if self.current_pos_player == (self.players.len() as u8) && 
+            ((self.players.len() as u8) - 1) as u8
+        }else if self.current_pos_player == ((self.players.len() - 1) as i8) && 
                  self.order_of_play == "pair".to_string(){
-            0
-        }else{
-            self.current_pos_player + 1
+            0 as u8
+        }else if self.order_of_play == "odd".to_string(){
+            (self.current_pos_player - 1) as u8
+        }else{//pair
+            (self.current_pos_player + 1) as u8
         }         
     }
-    fn check_card(&self,card:&Card) ->bool{ //we check if current card is adapted to the current 
+    fn is_card_fit(&self,card:Card) ->bool{ //we check if the card given  is adapted to the current 
         if self.current_card.get_value() != card.get_value() && 
-           self.current_card.get_color() != card.get_color(){
+           self.current_card.get_color() != card.get_color() && 
+           card.get_color() != "⬜"{
            return false;  
         }   
         true
     }
-    fn check_sequence(&self,seq:Vec<Card>) ->bool{ //here we check a sequence of card if the have a same value 
-        let mut index=1;
-        while index < seq.len() {
-            if seq[0].get_value() != seq[index].get_value(){
-                return false;
-            }
-            index+=1;
-        }
-        true
+    fn is_card_particular(&self)->bool{//here we check if a card is special or not 
+       if self.current_card.get_value() != "SKIP🚫" && 
+          self.current_card.get_value() != "REVERSE🔄" &&
+          self.current_card.get_value() != "+2" &&
+          self.current_card.get_value() != "COLOR-CHANGE🎨" &&
+          self.current_card.get_value() != "+4🌈" {return false;}
+        true  
+    }
+    fn is_card_special(&self)->bool{//here we check if a card is special or not 
+       if self.current_card.get_value() != "COLOR-CHANGE🎨" &&
+          self.current_card.get_value() != "+4🌈"&&
+          self.current_card.get_value() != "+2" {return false;}
+        true  
     }
     fn show_table(&self){
         let len = self.players.len();
@@ -196,31 +234,8 @@ impl Table{
     
     }
 }
-//(step 4) --->input from players
-fn input_players(msg:&str,type_id:&str) ->u8{ //we create player <= 10
-    loop {
-        let mut input = String::new();
 
-        print!("{} => ", msg);
-        io::stdout().flush().unwrap(); 
 
-        io::stdin().read_line(&mut input).unwrap();
-        let input = input.trim();
-
-        match input.parse::<u8>() {
-            Ok(input_number) => {
-                if type_id == "players" && (input_number > 10 || input_number <=1){
-                    println!("{} , try again ♻️",msg);
-                    continue; 
-                }
-                return input_number; 
-            }
-            Err(_) => {
-                println!("'{}' is not a valid number, try again ♻️", input);
-            }
-        }
-    }
-}
 
 fn main() {
     println!("-------------------------------------------------------------------------");
@@ -241,13 +256,12 @@ fn main() {
    println!("-------------------------------------------------------------------------");
    /////////////////////////////////////////////////////////////////////////////////////
    let time =Local::now();//time
-   let mut players_length:u8=0;//number of playes
    let mut table=Table{
                               players: Vec::new(),table_cards: Vec::new(),
                               trash_card: Vec::new(),current_card: Card{value:"".to_string(),color:"".to_string()},
-                              winners: Vec::new(),current_pos_player:0,//first player to player is players zero 
-                              order_of_play:"".to_string()
-                            };       
+                              winners: Vec::new(),current_pos_player:-1,
+                              order_of_play:"pair".to_string(),counter:0,color_chosen:"".to_string()
+                            };       //table
                             
    /////////////////////////////////////////////////////////////////////////////////////
    println!("====================================>{}",time);
@@ -255,12 +269,10 @@ fn main() {
    println!(" Welcome to the UNO-GAME ");
    println!(" _______________________");
    println!("");
-   /////////////////////////////////////////////////////////////////////////////////////
-   players_length=input_players("Please choose the number of players <=10 && >1","players"); //getting number of player 
-   table.create_players(players_length);//we create players 
+   /////////////////////////////////////////////////////////////////////////////////////--->
+   table.create_players(table.input_players("Please choose the number of players ",2,11,"table"));//we create players 
    table.set_table_cards(table.get_cards());//we set cards to table 
-   println!("size 0 : {}",table.table_cards.len());
-   ///////////////////////////////////////////////////////////////////////////////////// ---> distr cards 
+   ///////////////////////////////////////////////////////////////////////////////////// ---> distr cards  to players 
     for i in 0..table.players.len() {
         for _ in 0..7 {
             if let Some(card) = table.draw_card() {
@@ -269,9 +281,24 @@ fn main() {
             }
         } 
    }
-   ///////////////////////////////////////////////////////////////////////////////////// 
+   println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
+   ///////////////////////////////////////////////////////////////////////////////////// --> set the current card 
    table.set_current_card(table.table_cards[table.table_cards.len() - 1].clone(), &Person { position_player: 254, cards: Vec::new()}, "table");
-   table.show_table();
-   println!("size 1 : {}",table.table_cards.len());
-
+   //////////////////////////////////////////////////////////////////////////////////// ---> game
+   while !table.players.is_empty() {
+         println!("-------------------------------------------------------------------------");
+         println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
+         let mut i=table.get_next_pos() as usize;
+         let mut player=table.players[table.get_next_pos() as usize].clone();//we get the person who is going to play 
+         println!("🧑 Player {} it's your turn ",player.get_position_player());
+         player.get_player_cards();//here we get the players cards 
+         if table.is_card_special(){//if the current card is special 
+             println!("Not yet implemented ");
+             break;
+         }else{//if not 
+             println!("Not yet implemented ");
+             break;
+         }
+   }
 }
+
