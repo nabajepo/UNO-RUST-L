@@ -240,13 +240,19 @@ impl Table{
         self.players.remove(index as usize);
     }
     fn show_ranking(&self){// we display winners
-        println!("___________________RANKING-PLAYERS___________________");
+        println!("|___________________RANKING-PLAYERS___________________|");
         let mut index=0;
         while index < self.winners.len(){
-            println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"🎊");
+            if index == 0 {//first
+                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"🏆");
+            }else if index == self.winners.len() - 1 {//last
+                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"👏");
+            }else{//middle
+                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"🎉");
+            } 
             index+=1;
         }
-        println!("_____________________________________________________");
+        println!("|_____________________________________________________|");
     }
 }
 
@@ -365,6 +371,9 @@ fn main() {
                          table.players[index_player].uno_speech=true;
                       }
                       println!("The program will notice other players about your choice");
+                   }else if table.players[index_player].cards.len() == 0 {
+                       println!("=========> YOU WON {}<=========","🥇");
+                       table.add_new_winners(index_player as u8);
                    }
                 }else{//if not the player play an another round  
                     table.current_pos_player=table.prev_pos_player;
