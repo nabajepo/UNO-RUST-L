@@ -364,16 +364,30 @@ fn main() {
                    //set a new current card
                    table.set_current_card(suitable_card, "player");
                    //check if a student has 1 card left
-                   if table.players[index_player].cards.len() == 1{
+                   if table.players[index_player].cards.len() == 1{// if you have a card left
                       println!("{} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
                       let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
-                      if choice_uno == 1 {
+                      if choice_uno == 1 {//if yes
                          table.players[index_player].uno_speech=true;
+                         println!("The program will notice other players  {}","✅");
+                         println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
+                         table.players[index_player].show_player_cards();
+                      } else{//if no
+                         for _ in 0..2 {
+                             if let Some(card) = table.draw_card() {
+                                table.players[index_player].add_new_card_player(card);
+                             }
+                         }  
+                         println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                         table.players[index_player].show_player_cards(); 
                       }
-                      println!("The program will notice other players about your choice");
-                   }else if table.players[index_player].cards.len() == 0 {
+                   }else if table.players[index_player].cards.len() == 0 {//if no more cards 
                        println!("=========> YOU WON {}<=========","🥇");
                        table.add_new_winners(index_player as u8);
+                       table.players[index_player].show_player_cards();
+                   }else{//if you still have cards 
+                       println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                       table.players[index_player].show_player_cards();
                    }
                 }else{//if not the player play an another round  
                     table.current_pos_player=table.prev_pos_player;
