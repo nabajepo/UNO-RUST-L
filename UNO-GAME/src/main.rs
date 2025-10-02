@@ -304,6 +304,8 @@ fn main() {
    }
    println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
    println!("=======================================>SIZE OF TRASH CARDS : {} cards {}",table.trash_card.len(),"🃏");
+   println!("=======================================>SIZE OF PLAYERS : {} players {}",table.players.len(),"🧑");
+   println!("=======================================>SIZE OF WINNERS : {} winners {}",table.winners.len(),"🎉");
    //-------------------------------------------------------------------------------------> set the current card 
    table.set_current_card(table.table_cards[table.table_cards.len() - 1].clone(), "table");
    //-------------------------------------------------------------------------------------> game
@@ -313,6 +315,8 @@ fn main() {
            println!("-------------------------------------------------------------------------");
            println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
            println!("=======================================>SIZE OF TRASH CARDS : {} cards {}",table.trash_card.len(),"🃏");
+           println!("=======================================>SIZE OF PLAYERS : {} players {}",table.players.len(),"🧑");
+           println!("=======================================>SIZE OF WINNERS : {} winners {}",table.winners.len(),"🎉");
          }
          let index_player=table.get_next_pos() as usize;
          println!("===> {} Player {} it's your turn. You have {} cards  {}","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards.len(),"🃏");
