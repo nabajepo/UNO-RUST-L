@@ -40,10 +40,10 @@ impl Person{
     fn show_player_cards(&self) {
         println!("===> {} Player {} these are your cards : {:?} ","🧑",self.get_position_player(),&self.cards);
     }
-    fn remove_card(&mut self,index:u8){
-        self.cards.remove(index as usize);
-        println!("The card {:?} has been remove successfully for {} Player {}",self.cards[index as usize].get_card_info(),
+    fn remove_card(&mut self,index:usize){
+        println!("The card {:?} has been remove successfully for {} Player {}",self.cards[index].get_card_info(),
                                                                                "🧑",self.get_position_player());
+        self.cards.remove(index);
         println!("You have {} cards {} left ",self.cards.len(),"🃏");                                                                       
     }
 }
@@ -226,9 +226,9 @@ impl Table{
     fn handle_color(&mut self){//for the color card
         let colors=vec!["🔴","🟡","🟢","🔵"];
         println!("Here are the available colors => {:?} ",colors);
-        self.color_chosen=colors[self.input_players("Please give the index of the color chosen ", 0, 5, "index_color") as usize].to_string();
+        let index_colors=self.input_players("Please give the index of the color chosen ", 0, 5, "index_color") as usize;
+        self.color_chosen=colors[ index_colors].to_string();
         println!("The chosen color is  => {} ",self.color_chosen);
-
     }
     fn handle_plus_four(&mut self){//for the card +4
         self.counter=self.counter+4;
@@ -292,7 +292,7 @@ fn main() {
    println!(" _______________________");
    println!("");
    //-------------------------------------------------------------------------------------->create players and define cards
-   table.create_players(table.input_players("Please choose the number of players ",2,11,"table"));//we create players 
+   table.create_players(table.input_players("Please choose the number of players ",2,11,"table") as u8);//we create players 
    table.set_table_cards(table.get_cards());//we set cards to table 
    //--------------------------------------------------------------------------------------> distr cards  to players 
     for i in 0..table.players.len() {
@@ -341,7 +341,7 @@ fn main() {
                    //save the card
                    let suitable_card=table.players[index_player].cards[index_card as usize].clone();
                    //remove the card from the player cards
-                   table.players[index_player].remove_card(index_card);
+                   table.players[index_player].remove_card(index_card as usize);
                    //check the card
                    if suitable_card.get_value() == "SKIP🚫"{
                       println!("The card {:?} is a special card {}",suitable_card,"🃏");
@@ -352,10 +352,10 @@ fn main() {
                    }else if suitable_card.get_value() == "+2"{
                       println!("The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_plus_two();
-                   }else if suitable_card.get_value() != "COLOR-CHANGE🎨"{
+                   }else if suitable_card.get_value() == "COLOR-CHANGE🎨"{
                       println!("The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_color();
-                   }else if suitable_card.get_value() != "+4🌈"{
+                   }else if suitable_card.get_value() == "+4🌈"{
                       println!("The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_plus_four();
                    }else{
@@ -369,7 +369,7 @@ fn main() {
                       let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
                       if choice_uno == 1 {//if yes
                          table.players[index_player].uno_speech=true;
-                         println!("The program will notice other players  {}","✅");
+                         println!("The program will inform other players  {}","✅");
                          println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
                          table.players[index_player].show_player_cards();
                       } else{//if no
