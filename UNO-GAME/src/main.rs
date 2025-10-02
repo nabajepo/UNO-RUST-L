@@ -226,7 +226,7 @@ impl Table{
     fn handle_color(&mut self){//for the color card
         let colors=vec!["🔴","🟡","🟢","🔵"];
         println!("Here are the available colors => {:?} ",colors);
-        let index_colors=self.input_players("Please give the index of the color chosen ", 0, 5, "index_color") as usize;
+        let index_colors=self.input_players("Please give the index of the color chosen ", 0, 4, "index_color") as usize;
         self.color_chosen=colors[ index_colors].to_string();
         println!("The chosen color is  => {} ",self.color_chosen);
     }
@@ -303,6 +303,7 @@ fn main() {
         } 
    }
    println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
+   println!("=======================================>SIZE OF TRASH CARDS : {} cards {}",table.trash_card.len(),"🃏");
    //-------------------------------------------------------------------------------------> set the current card 
    table.set_current_card(table.table_cards[table.table_cards.len() - 1].clone(), "table");
    //-------------------------------------------------------------------------------------> game
@@ -311,6 +312,7 @@ fn main() {
          if table.current_pos_player != table.prev_pos_player{
            println!("-------------------------------------------------------------------------");
            println!("=======================================>SIZE OF TABLE CARDS : {} cards {}",table.table_cards.len(),"🃏");
+           println!("=======================================>SIZE OF TRASH CARDS : {} cards {}",table.trash_card.len(),"🃏");
          }
          let index_player=table.get_next_pos() as usize;
          println!("===> {} Player {} it's your turn. You have {} cards  {}","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards.len(),"🃏");
