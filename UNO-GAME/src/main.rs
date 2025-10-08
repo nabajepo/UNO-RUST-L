@@ -240,19 +240,26 @@ impl Table{
         self.players.remove(index as usize);
     }
     fn show_ranking(&self){// we display winners
-        println!("|___________________RANKING-PLAYERS___________________|");
+        println!("\n|___________________RANKING-PLAYERS___________________|");
         let mut index=0;
-        while index < self.winners.len(){
+        while index < self.winners.len() && !self.winners.is_empty(){
             if index == 0 {//first
-                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"🏆");
+                println!("In positon {} we have => Player {} {}",index+1,self.winners[index].get_position_player(),"🏆");
             }else if index == self.winners.len() - 1 {//last
-                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"👏");
+                println!("In positon {} we have => Player {} {}",index+1,self.winners[index].get_position_player(),"👏");
             }else{//middle
-                println!("In positon {} we have => {} {}",index+1,self.winners[index].get_position_player(),"🎉");
+                println!("In positon {} we have => Player {} {}",index+1,self.winners[index].get_position_player(),"🎉");
             } 
             index+=1;
         }
         println!("|_____________________________________________________|");
+    }
+    fn check_table(&self,index:usize){
+        for i in 0..self.players.len(){
+            if (i != index ) && self.players[i].uno_speech {
+                println!("===> {} {} The player {} said UNO ","⚠️","🧑",i);
+            }
+        }
     }
 }
 
@@ -320,6 +327,8 @@ fn main() {
          }
          let index_player=table.get_next_pos() as usize;
          println!("===> {} Player {} it's your turn. You have {} cards  {}","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards.len(),"🃏");
+         //check if a player said UNO 
+         table.check_table(index_player);
          //here we get the players cards
          table.players[index_player].show_player_cards(); 
          //----------> Current card
@@ -336,6 +345,10 @@ fn main() {
                     table.players[index_player].add_new_card_player(card);
                     println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
                     table.players[index_player].show_player_cards();
+                }
+                if table.players[index_player].uno_speech { //if the player said UNO
+                    table.players[index_player].uno_speech = false;
+                    println!("{} Now you are not  in UNO session ","⚠️");
                 }
              } else{ //to play a card 
                 //---------> index card 
@@ -374,7 +387,7 @@ fn main() {
                       println!("{} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
                       let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
                       if choice_uno == 1 {//if yes
-                         table.players[index_player].uno_speech=true;
+                         table.players[index_player].uno_speech= true;
                          println!("The program will inform other players  {}","✅");
                          println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
                          table.players[index_player].show_player_cards();
