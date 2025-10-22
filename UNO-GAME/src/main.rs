@@ -35,16 +35,16 @@ impl Person{
     }
     fn add_new_card_player(&mut self,new_card:Card){
         self.cards.push(new_card);
-        println!("Card added successfully for 🧑 Player {}", self.position_player);
+        println!("===> Card added successfully for 🧑 Player {}", self.position_player);
     }
     fn show_player_cards(&self) {
         println!("===> {} Player {} these are your cards : {:?} ","🧑",self.get_position_player(),&self.cards);
     }
     fn remove_card(&mut self,index:usize){
-        println!("The card {:?} has been remove successfully for {} Player {}",self.cards[index].get_card_info(),
+        println!("===> The card {:?} has been remove successfully for {} Player {}",self.cards[index].get_card_info(),
                                                                                "🧑",self.get_position_player());
         self.cards.remove(index);
-        println!("You have {} cards {} left ",self.cards.len(),"🃏");                                                                       
+        println!("===> You have {} cards {} left ",self.cards.len(),"🃏");                                                                       
     }
 }
 
@@ -106,7 +106,7 @@ impl Table{
          let mut index :u8=0;
          while index < number_p{
             self.players.push(Person { position_player: index, cards: Vec::new(),uno_speech:false});
-            println!("Player {} added successfully {}", self.players.len()-1, "✅");  
+            println!("===> Player {} added successfully {}", self.players.len()-1, "✅");  
             index+=1;
          }
     }
@@ -114,7 +114,7 @@ impl Table{
     loop {
         let mut input = String::new();
 
-        print!("{} => ", msg);
+        print!("===> {} => ", msg);
         io::stdout().flush().unwrap(); 
 
         io::stdin().read_line(&mut input).unwrap();
@@ -123,28 +123,28 @@ impl Table{
         match input.parse::<u8>() {
             Ok(input_number) => {
                 if (input_number >= end || input_number <start) && (type_id == "table" || type_id == "index_card" || type_id == "index_color"){
-                    println!("Please choose the number of players >={} && <{} , try again ♻️",start,end);
+                    println!("===> Please choose the number of players >={} && <{} , try again ♻️",start,end);
                     continue; 
                 }else if input_number !=1 && input_number !=2 && type_id=="choice_action"{
-                    println!("Please choose the number between 1 and 2 , try again ♻️");
+                    println!("===> Please choose the number between 1 and 2 , try again ♻️");
                     continue; 
                 }
                 return input_number; 
             }
             Err(_) => {
-                println!("'{}' is not a valid number, try again ♻️", input);
+                println!("===> {} is not a valid number, try again ♻️", input);
             }
         }
     }
 }
     fn set_table_cards(&mut self,cards:Vec<Card>){ //here we set cards after shuffling 
          self.table_cards=self.shuffle_cards(cards.clone());
-         println!("{} All cards are ready  to be drawn {} ", "✅","🃏");
+         println!("===> {} All cards are ready  to be drawn {} ", "✅","🃏");
     }
     fn draw_card(&mut self) -> Option<Card>{ //here a person draw a card 
         if self.table_cards.is_empty() {
             if self.trash_card.is_empty() {
-                println!("❌ No more cards to draw!");
+                println!("===> ❌ No more cards to draw!");
                 return None;
             }
             self.table_cards = self.shuffle_cards(self.trash_card.clone());
@@ -197,39 +197,36 @@ impl Table{
     fn is_card_fit(&self,card:Card) ->bool{ //we check if the card given  is adapted to the current 
         if self.current_card.get_value() != card.get_value() && 
            self.current_card.get_color() != card.get_color() && 
-           card.get_color() != "⬜"{
-           return false;  
+           card.get_color() != "⬜" {
+            if self.current_card.get_color() == "⬜" && !self.is_valid_current_card  && self.color_chosen == card.get_color().to_string() {
+                return true;
+            }
+            return false;  
         }   
         true
     }
-    fn is_card_special(&self)->bool{//here we check if a card is special or not 
-       if self.current_card.get_value() != "COLOR-CHANGE🎨" &&
-          self.current_card.get_value() != "+4🌈"&&
-          self.current_card.get_value() != "+2" {return false;}
-        true  
-    }
     fn handle_skip(&mut self){//for the card skip
-       println!("{} Player {} is going to be skipped {}","🧑",self.get_next_pos(),"🔄");
+       println!("===> {} Player {} is going to be skipped {}","🧑",self.get_next_pos(),"🔄");
     } 
     fn handle_reverse(&mut self){//for the card reverse
        if self.order_of_play == "pair".to_string(){ //if the order is pair
           self.order_of_play="odd".to_string();
-          println!("The order of the play is now odd {}","⬅️");
+          println!("===> The order of the play is now odd {}","⬅️");
        }else{//if the order is odd
           self.order_of_play="pair".to_string();
-          println!("The order of the play is now pair {}","➡️");
+          println!("===> The order of the play is now pair {}","➡️");
        }
     }
     fn handle_plus_two(&mut self){//for the card +2
         self.counter=self.counter+2;
-        println!("The next player will have to draw {} cards {}",self.counter,"🃏");
+        println!("===> The next player will have to draw {} cards {}",self.counter,"🃏");
     }    
     fn handle_color(&mut self){//for the color card
         let colors=vec!["🔴","🟡","🟢","🔵"];
-        println!("Here are the available colors => {:?} ",colors);
+        println!("===> Here are the available colors => {:?} ",colors);
         let index_colors=self.input_players("Please give the index of the color chosen ", 0, 4, "index_color") as usize;
         self.color_chosen=colors[ index_colors].to_string();
-        println!("The chosen color is  => {} ",self.color_chosen);
+        println!("===> The chosen color is  => {} ",self.color_chosen);
     }
     fn handle_plus_four(&mut self){//for the card +4
         self.counter=self.counter+4;
@@ -237,7 +234,7 @@ impl Table{
     }
     fn add_new_winners(&mut self,index:u8){ //here we add in order winners 
         self.winners.push(self.players[index as usize].clone());
-        println!("{} Player {} is in position {} of winners list {}","🧑",self.players[index as usize].get_position_player(),self.winners.len(),"🎊");
+        println!("===> {} Player {} is in position {} of winners list {}","🧑",self.players[index as usize].get_position_player(),self.winners.len(),"🎊");
         self.players.remove(index as usize);
     }
     fn show_ranking(&self){// we display winners
@@ -332,10 +329,245 @@ fn main() {
          //----------> Current card
          let current_card=table.current_card.clone();
          println!("===> The current card is {:?} {}",current_card,"🃏");
-         if table.is_card_special(){//if the current card is special 
-             println!("Not yet implemented ");
-             break;
-         }else{//if not 
+         // color for +4 and if prev play already play the cards 
+         if current_card.get_value() == "+4🌈" || current_card.get_value() == "+2" && !table.is_valid_current_card {
+             println!("===> Please be informed that {} Player {} already played the current card is {:?} {}","🧑",table.prev_pos_player,current_card,"🃏");
+             println!("===> All you have to do is to play a card with the color chosen {} or draw a card {}",table.color_chosen,"🃏");
+         }
+         // color for +2 and if prev play already play the cards 
+         if current_card.get_value() == "+2" && !table.is_valid_current_card {
+             println!("===> Please be informed that {} Player {} already played the current card is {:?} {}","🧑",table.prev_pos_player,current_card,"🃏");
+             println!("===> All you have to do is to play a card with the card color {} or draw a card {}",table.color_chosen,"🃏");
+         }
+         // ---- color change 
+         if current_card.get_value() == "COLOR-CHANGE🎨"{//if the current card is a color card 
+             println!("===> The current {:?} {} is a special card.It imposes you to play a card with a chosen color except playing the same color or +4🌈 card",current_card,"🃏");
+             println!("===> {} Player {} chose the color {} .You have to play a card with that color except playing the same color or +4🌈 card","🧑",table.prev_pos_player,table.color_chosen);
+             let  choice=table.input_players("Please make your choice : 1.For drawing a card || 2.For playing a card ", 1, 2, "choice_action");
+             
+             if choice == 1 {//------->choice 1 drawing a card
+                if let Some(card) = table.draw_card() {
+                    table.players[index_player].add_new_card_player(card);
+                    println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                    table.players[index_player].show_player_cards();
+                }
+                if table.players[index_player].uno_speech { //if the player said UNO
+                    table.players[index_player].uno_speech = false;
+                    println!("===> {} Now you are not  in UNO session ","⚠️");
+                }
+             }
+             else {//------->choice 2 playing card 
+                //---------> index card 
+                let index_card=table.input_players("Please give the index of the card to play ", 0, table.players[index_player].cards.len() as u8, "index_card");
+                println!("===> You chose the card => {:?} {}",table.players[index_player].cards[index_card as usize],"🃏");
+                //save the card
+                let card_cc=table.players[index_player].cards[index_card as usize].clone();
+                //check the card if it fit 
+                if card_cc.get_color() == "⬜" || card_cc.get_color().to_string() == table.color_chosen {
+                   println!("===> The card {:?} {} is suitable {}",table.players[index_player].cards[index_card as usize],"🃏","✅");
+                   //remove the card from the player cards
+                   table.players[index_player].remove_card(index_card as usize);
+                   //check the card
+                   if card_cc.get_value() == "SKIP🚫"{
+                      println!("===> The card {:?} is a special card {}",card_cc,"🃏");
+                      table.handle_skip();
+                   }else if card_cc.get_value() == "REVERSE🔄"{
+                      println!("===> The card {:?} is a special card {}",card_cc,"🃏");
+                      table.handle_reverse(); 
+                   }else if card_cc.get_value() == "+2"{
+                      println!("===> The card {:?} is a special card {}",card_cc,"🃏");
+                      table.handle_plus_two();
+                   }else if card_cc.get_value() == "COLOR-CHANGE🎨"{
+                      println!("===> The card {:?} is a special card {}",card_cc,"🃏");
+                      table.handle_color();
+                   }else if card_cc.get_value() == "+4🌈"{
+                      println!("===> The card {:?} is a special card {}",card_cc,"🃏");
+                      table.handle_plus_four();
+                   }else{
+                      println!("===> The card {:?} is a normal card {}",card_cc,"🃏");
+                   } 
+                   //set a new current card
+                   table.set_current_card(card_cc, "player");
+                   //check if a student has 1 card left
+                   if table.players[index_player].cards.len() == 1{// if you have a card left
+                      println!("===> {} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
+                      let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
+                      if choice_uno == 1 {//if yes
+                         table.players[index_player].uno_speech= true;
+                         println!("===> The program will inform other players  {}","✅");
+                         println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
+                         table.players[index_player].show_player_cards();
+                      } else{//if no
+                         for _ in 0..2 {
+                             if let Some(card) = table.draw_card() {
+                                table.players[index_player].add_new_card_player(card);
+                             }
+                         }  
+                         println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                         table.players[index_player].show_player_cards(); 
+                      }
+                   }else if table.players[index_player].cards.len() == 0 {//if no more cards 
+                       println!("=========> YOU WON {}<=========","🥇");
+                       table.add_new_winners(index_player as u8);
+                       table.players[index_player].show_player_cards();
+                   }else{//if you still have cards 
+                       println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                       table.players[index_player].show_player_cards();
+                   }
+                }
+                else{ //if the card chosen by the player is not suitable 
+                   table.current_pos_player=table.prev_pos_player;
+                   println!("===> {} Dear {} Player {} the card you chose {:?} is not suitable for the current card {:?}","❌","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards[index_card as usize],current_card);
+                   println!("===> Please try again {}","♻️"); 
+                } 
+             }
+         } else if (current_card.get_value() == "+2" || current_card.get_value() == "+4🌈") && table.is_valid_current_card { //if the current card is 4+ or 2+
+            //------------------------------------------->+2
+            if current_card.get_value() == "+2" { //if the current card has been played by the previous player
+               table.is_valid_current_card = false; //change to false  
+               println!("===> The current {:?} {} is a special card.It imposes you to draw 2 more cards except playing +4🌈 or the same card ",current_card,"🃏");
+               println!("===> You have to draw {} cards because the counter ( it means {} players played the cards sequentially ) except playing +4🌈 or the same card ",table.counter,table.counter/2);
+               let  choice=table.input_players("Please make your choice : 1.For drawing cards || 2.For playing a card ", 1, 2, "choice_action");
+               if choice == 1 {//to draw cards
+                  if table.players[index_player].uno_speech { //if the player said UNO
+                     table.players[index_player].uno_speech = false;
+                     println!("===> {} Now you are not  in UNO session ","⚠️");
+                  }
+                  for _ in 0..table.counter {
+                      if let Some(card) = table.draw_card() {
+                         table.players[index_player].add_new_card_player(card);
+                      }
+                  }   
+                  println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                  table.players[index_player].show_player_cards();    
+                  table.counter = 0;//reset counter   
+                } 
+                else { //playing a card 
+                     //---------> index card 
+                     let index_card=table.input_players("Please give the index of the card to play ", 0, table.players[index_player].cards.len() as u8, "index_card");
+                     println!("===> You chose the card => {:?} {}",table.players[index_player].cards[index_card as usize],"🃏");
+                     //save the card
+                     let card_pd=table.players[index_player].cards[index_card as usize].clone();
+                     //check the card if it fit 
+                     if card_pd.get_value() == "+2" || card_pd.get_value() == "+4🌈" {
+                        println!("===> The card {:?} {} is suitable {}",table.players[index_player].cards[index_card as usize],"🃏","✅");
+                        if card_pd.get_value() == "+2"{
+                            println!("===> The card {:?} is a special card {}",card_pd,"🃏");
+                            table.handle_plus_two();
+                        }else {
+                         println!("===> The card {:?} is a special card {}",card_pd,"🃏");
+                         table.handle_plus_four();
+                        }
+                        //set a new current card
+                        table.set_current_card(card_pd, "player");
+                       //check if a student has 1 card left
+                       if table.players[index_player].cards.len() == 1{// if you have a card left
+                          println!("===> {} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
+                          let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
+                          if choice_uno == 1 {//if yes
+                             table.players[index_player].uno_speech= true;
+                             println!("===> The program will inform other players  {}","✅");
+                             println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
+                             table.players[index_player].show_player_cards();
+                           } else{//if no
+                             for _ in 0..2 {
+                               if let Some(card) = table.draw_card() {
+                                  table.players[index_player].add_new_card_player(card);
+                                }
+                             }  
+                           println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                           table.players[index_player].show_player_cards(); 
+                        }
+                        }else if table.players[index_player].cards.len() == 0 {//if no more cards 
+                            println!("=========> YOU WON {}<=========","🥇");
+                            table.add_new_winners(index_player as u8);
+                            table.players[index_player].show_player_cards();
+                        }else{//if you still have cards 
+                            println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                            table.players[index_player].show_player_cards();
+                        }
+                     } else { //if card no fit 
+                        table.current_pos_player=table.prev_pos_player;
+                        println!("===> {} Dear {} Player {} the card you chose {:?} is not suitable for the current card {:?}","❌","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards[index_card as usize],current_card);
+                        println!("===> Please try again {}","♻️"); 
+                     }
+                }  
+            }else { //if current card is +4
+                   table.is_valid_current_card = false; //change to false
+                   println!("===> The current {:?} {} is a special card.It imposes you to draw 4 more cards except playing +4🌈 or the 2+ for the color chosen ",current_card,"🃏");
+                   println!("===> You have to draw {} cards because the counter ( it means {} players played the cards sequentially ) except playing +4🌈 or the 2+ for the color chosen ",table.counter,table.counter/4);
+                   println!("===> Please be informed {} Player {} chose the color {} .You have to play a card with that color except playing the 2+ of the color chosen  or +4🌈 card","🧑",table.prev_pos_player,table.color_chosen);
+                   let  choice=table.input_players("Please make your choice : 1.For drawing cards || 2.For playing a card ", 1, 2, "choice_action");
+                    if choice == 1 {//to draw cards
+                       if table.players[index_player].uno_speech { //if the player said UNO
+                          table.players[index_player].uno_speech = false;
+                          println!("===> {} Now you are not  in UNO session ","⚠️");
+                       }
+                       for _ in 0..table.counter {
+                          if let Some(card) = table.draw_card() {
+                             table.players[index_player].add_new_card_player(card);
+                          }
+                       }   
+                       println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                       table.players[index_player].show_player_cards();    
+                       table.counter = 0;//reset counter   
+                    } else { // play a card 
+                       //---------> index card 
+                       let index_card=table.input_players("Please give the index of the card to play ", 0, table.players[index_player].cards.len() as u8, "index_card");
+                       println!("===> You chose the card => {:?} {}",table.players[index_player].cards[index_card as usize],"🃏");
+                       //save the card
+                       let card_pf=table.players[index_player].cards[index_card as usize].clone();
+                       //check the card if it fit 
+                       if (card_pf.get_value() == "+2" && card_pf.get_color().to_string() == table.color_chosen ) || card_pf.get_value() == "+4🌈" { 
+                          println!("===> The card {:?} {} is suitable {}",table.players[index_player].cards[index_card as usize],"🃏","✅");
+                          //remove the card from the player cards
+                          table.players[index_player].remove_card(index_card as usize);
+                          //check the card 
+                          if card_pf.get_value() == "+2"{
+                             println!("===> The card {:?} is a special card {}",card_pf,"🃏");
+                             table.handle_plus_two();
+                          }else if card_pf.get_value() == "+4🌈"{
+                             println!("===> The card {:?} is a special card {}",card_pf,"🃏");
+                             table.handle_plus_four();
+                          }   
+                          //set a new current card
+                          table.set_current_card(card_pf, "player");
+                          //check if a student has 1 card left 
+                          if table.players[index_player].cards.len() == 1{// if you have a card left
+                             println!("===> {} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
+                             let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
+                             if choice_uno == 1 {//if yes
+                                table.players[index_player].uno_speech= true;
+                                println!("===> The program will inform other players  {}","✅");
+                                println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
+                                table.players[index_player].show_player_cards();
+                             } else{//if no
+                                for _ in 0..2 {
+                                   if let Some(card) = table.draw_card() {
+                                      table.players[index_player].add_new_card_player(card);
+                                    }
+                                }  
+                                println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                                table.players[index_player].show_player_cards(); 
+                             }
+                             }else if table.players[index_player].cards.len() == 0 {//if no more cards 
+                                println!("=========> YOU WON {}<=========","🥇");
+                                table.add_new_winners(index_player as u8);
+                                table.players[index_player].show_player_cards();
+                             }else{//if you still have cards 
+                               println!("===> Now you have {} cards {}",table.players[index_player].cards.len(),"🃏");
+                               table.players[index_player].show_player_cards();
+                             }
+                       } else { // card does not fit
+                             table.current_pos_player=table.prev_pos_player;
+                             println!("===> {} Dear {} Player {} the card you chose {:?} is not suitable for the current card {:?}","❌","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards[index_card as usize],current_card);
+                             println!("===> Please try again {}","♻️");
+                       }
+                    }   
+                 
+            }
+            //------------------------------------------->+4
+         } else {//if the current card is normal 
              //----------> action
              let  choice=table.input_players("Please make your choice : 1.For drawing a card || 2.For playing a card ", 1, 2, "choice_action");
              if choice == 1 {//to draw a card 
@@ -346,47 +578,47 @@ fn main() {
                 }
                 if table.players[index_player].uno_speech { //if the player said UNO
                     table.players[index_player].uno_speech = false;
-                    println!("{} Now you are not  in UNO session ","⚠️");
+                    println!("===> {} Now you are not  in UNO session ","⚠️");
                 }
              } else{ //to play a card 
                 //---------> index card 
                 let index_card=table.input_players("Please give the index of the card to play ", 0, table.players[index_player].cards.len() as u8, "index_card");
-                println!("You chose the card => {:?} {}",table.players[index_player].cards[index_card as usize],"🃏");
+                println!("===> You chose the card => {:?} {}",table.players[index_player].cards[index_card as usize],"🃏");
                 //--------->check if the card chose is suitable
                 if table.is_card_fit(table.players[index_player].cards[index_card as usize].clone()){ //if card is suitable 
-                   println!("The card {:?} {} is suitable {}",table.players[index_player].cards[index_card as usize],"🃏","✅"); 
+                   println!("===> The card {:?} {} is suitable {}",table.players[index_player].cards[index_card as usize],"🃏","✅"); 
                    //save the card
                    let suitable_card=table.players[index_player].cards[index_card as usize].clone();
                    //remove the card from the player cards
                    table.players[index_player].remove_card(index_card as usize);
                    //check the card
                    if suitable_card.get_value() == "SKIP🚫"{
-                      println!("The card {:?} is a special card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_skip();
                    }else if suitable_card.get_value() == "REVERSE🔄"{
-                      println!("The card {:?} is a special card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_reverse(); 
                    }else if suitable_card.get_value() == "+2"{
-                      println!("The card {:?} is a special card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_plus_two();
                    }else if suitable_card.get_value() == "COLOR-CHANGE🎨"{
-                      println!("The card {:?} is a special card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_color();
                    }else if suitable_card.get_value() == "+4🌈"{
-                      println!("The card {:?} is a special card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a special card {}",suitable_card,"🃏");
                       table.handle_plus_four();
                    }else{
-                      println!("The card {:?} is a normal card {}",suitable_card,"🃏");
+                      println!("===> The card {:?} is a normal card {}",suitable_card,"🃏");
                    }
                    //set a new current card
                    table.set_current_card(suitable_card, "player");
                    //check if a student has 1 card left
                    if table.players[index_player].cards.len() == 1{// if you have a card left
-                      println!("{} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
+                      println!("===> {} Dear {} Player {} you have 1 card left. If you don't say UNO you will have to draw 2 more cards","⚠️","🧑",table.players[index_player].get_position_player());
                       let choice_uno=table.input_players("Do you want to say UNO : 1.Yes || 2.No", 1, 2, "choice_action");
                       if choice_uno == 1 {//if yes
                          table.players[index_player].uno_speech= true;
-                         println!("The program will inform other players  {}","✅");
+                         println!("===> The program will inform other players  {}","✅");
                          println!("===> Now you have {} card {} left",table.players[index_player].cards.len(),"🃏");
                          table.players[index_player].show_player_cards();
                       } else{//if no
@@ -408,8 +640,8 @@ fn main() {
                    }
                 }else{//if not the player play an another round  
                     table.current_pos_player=table.prev_pos_player;
-                    println!("{} Dear {} Player {} the card you chose {:?} is not suitable for the current card {:?}","❌","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards[index_card as usize],current_card);
-                    println!("Please try again {}","♻️");
+                    println!("===> {} Dear {} Player {} the card you chose {:?} is not suitable for the current card {:?}","❌","🧑",table.players[index_player].get_position_player(),table.players[index_player].cards[index_card as usize],current_card);
+                    println!("===> Please try again {}","♻️");
                 }
              }
          }
