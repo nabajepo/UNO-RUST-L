@@ -59,8 +59,8 @@ struct Table{
     prev_pos_player:i8,//the position of the previous player
     order_of_play:String,//if pair the order is -> if odd the order is <- 
     counter:u8,//to count the sequence of a card 
-    color_chosen:String //the color for special card 
-
+    color_chosen:String, //the color for special card 
+    is_valid_current_card:bool //if a current card is 4+ or 2+ is current so the next player will just play the color not draw a card 
 }
 impl Table{
     fn get_cards(&self) ->Vec<Card>{ //here we get all cards 
@@ -170,6 +170,7 @@ impl Table{
         }else {
            self.trash_card.push(self.current_card.clone());
            self.current_card = card.clone(); 
+           if card.get_value() == "+4🌈" ||  card.get_value() == "+2"{self.is_valid_current_card=true;}// if 4+ or 2+ is current 
            println!(" ===> The  current card {} is {:?} {}","🃏",card,"✅");
         }
     }
@@ -285,7 +286,7 @@ fn main() {
                               players: Vec::new(),table_cards: Vec::new(),
                               trash_card: Vec::new(),current_card: Card{value:"".to_string(),color:"".to_string()},
                               winners: Vec::new(),current_pos_player:-1,prev_pos_player:-2,
-                              order_of_play:"pair".to_string(),counter:0,color_chosen:"".to_string()
+                              order_of_play:"pair".to_string(),counter:0,color_chosen:"".to_string(),is_valid_current_card:false
                             };       //table
                             
    //-------------------------------------------------------------------------------------->start game
