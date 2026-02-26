@@ -1,5 +1,5 @@
 # Description 
-This is program implement the UNO game 
+This is program implement UNO game 
 
 
 
