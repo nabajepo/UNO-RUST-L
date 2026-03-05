@@ -1,4 +1,4 @@
-# UNO-RUST-L – UNO Card Game (Rust CLI)
+## UNO-RUST-L – UNO Card Game (Rust CLI)
 
 ## Overview
 UNO-RUST-L is a **command-line implementation of the UNO card game** written in **Rust**.
