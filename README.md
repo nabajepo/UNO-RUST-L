@@ -36,7 +36,7 @@ The program supports multiple players and implements core UNO mechanics such as:
 
 ## Project Structure
 The Rust project is located in the `UNO-GAME/` folder
-<img width="179" height="189" alt="image" src="https://github.com/user-attachments/assets/6c5ee504-71a2-46e2-a1dc-08ec66b8eafc" />
+<img width="179" height="189" alt="image" src="https://github.com/user-attachments/assets/6c5ee504-71a2-46e2-a1dc-08ec66b8eafc" /> <br>
 
 
 ---
